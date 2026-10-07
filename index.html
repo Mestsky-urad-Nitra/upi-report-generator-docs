@@ -191,6 +191,18 @@
       background: #f1f5ff;
       color: var(--primary);
     }
+    .flowchart-wrap {
+      background: #f9fbff;
+      border: 1px solid #c7d6fb;
+      border-radius: 10px;
+      padding: 10px;
+      overflow-x: auto;
+    }
+    .flowchart-title {
+      margin: 0 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
     @media print {
       .sidebar { display: none; }
       .layout { grid-template-columns: 1fr; }
@@ -212,6 +224,7 @@
         <a href="#tab-tech">Technicka cast</a>
         <a href="#tab-l2">Deep Dive: Layout 2</a>
         <a href="#tab-l3">Deep Dive: Layout 3</a>
+        <a href="#sekcia-flowchart">Workflow flowchart</a>
         <a href="#sekcia-funkcie">Funkcie a moznosti</a>
         <a href="#sekcia-layout-detail">Detail layoutov</a>
         <a href="#sekcia-limity">Limity a defaulty</a>
@@ -347,6 +360,180 @@
             <div class="flow-step">4) Export UPI PDF.</div>
             <div class="flow-step">5) Ak existuje atlas=2, export CMZ PDF.</div>
             <div class="flow-step">6) Volitelny AGOL upload a volitelny Word export.</div>
+          </div>
+        </article>
+
+        <article id="sekcia-flowchart" class="section">
+          <h3>Workflow flowchart</h3>
+          <p class="flowchart-title">Vizuálny prehľad celej pipeline od vstupov po finálne výstupy</p>
+          <div class="flowchart-wrap">
+            <svg width="1480" height="760" viewBox="0 0 1480 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Detailny workflow flowchart UPI pluginu">
+              <defs>
+                <marker id="arrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+                  <path d="M0,0 L10,4 L0,8 z" fill="#193d8d"/>
+                </marker>
+                <style>
+                  .lane { fill:#f5f8ff; stroke:#d0dcfb; }
+                  .lane-title { font: 700 13px 'Segoe UI', Arial, sans-serif; fill:#193d8d; }
+                  .node { fill:#ffffff; stroke:#7a90c8; stroke-width:1.4; rx:10; }
+                  .node-core { fill:#eaf0ff; stroke:#193d8d; stroke-width:1.7; rx:10; }
+                  .node-text { font: 600 12px 'Segoe UI', Arial, sans-serif; fill:#1f2a44; }
+                  .node-sub { font: 400 11px 'Segoe UI', Arial, sans-serif; fill:#5b6a8a; }
+                  .decision { fill:#fff8e8; stroke:#d38a00; stroke-width:1.5; }
+                  .decision-text { font: 700 11px 'Segoe UI', Arial, sans-serif; fill:#7d4a00; }
+                  .edge { stroke:#193d8d; stroke-width:1.8; fill:none; marker-end:url(#arrow); }
+                  .edge-alt { stroke:#7d4a00; stroke-width:1.6; fill:none; marker-end:url(#arrow); }
+                  .label { font: 600 10px 'Segoe UI', Arial, sans-serif; fill:#193d8d; }
+                  .label-alt { font: 700 10px 'Segoe UI', Arial, sans-serif; fill:#7d4a00; }
+                </style>
+              </defs>
+
+              <!-- Swimlanes -->
+              <rect class="lane" x="20" y="20" width="1440" height="160" rx="12"/>
+              <rect class="lane" x="20" y="195" width="1440" height="170" rx="12"/>
+              <rect class="lane" x="20" y="380" width="1440" height="165" rx="12"/>
+              <rect class="lane" x="20" y="560" width="1440" height="175" rx="12"/>
+              <text class="lane-title" x="35" y="44">1) Vstup + validacia</text>
+              <text class="lane-title" x="35" y="219">2) Geometria + analytika</text>
+              <text class="lane-title" x="35" y="404">3) Exportne vetvy a podmienky</text>
+              <text class="lane-title" x="35" y="584">4) Distribucia a post-processing</text>
+
+              <!-- Lane 1 nodes -->
+              <rect class="node-core" x="80" y="75" width="180" height="64"/>
+              <text class="node-text" x="170" y="102" text-anchor="middle">Vstupy formulára</text>
+              <text class="node-sub" x="170" y="118" text-anchor="middle">spis, režim, voľby</text>
+
+              <rect class="node" x="330" y="75" width="190" height="64"/>
+              <text class="node-text" x="425" y="102" text-anchor="middle">Kontrola povinných vstupov</text>
+              <text class="node-sub" x="425" y="118" text-anchor="middle">KU, parcely, interné ID</text>
+
+              <polygon class="decision" points="600,107 640,75 680,107 640,139"/>
+              <text class="decision-text" x="640" y="111" text-anchor="middle">AGOL?</text>
+
+              <rect class="node" x="730" y="75" width="220" height="64"/>
+              <text class="node-text" x="840" y="102" text-anchor="middle">Overenie AGOL login stavu</text>
+              <text class="node-sub" x="840" y="118" text-anchor="middle">credentials v QGIS settings</text>
+
+              <rect class="node" x="1010" y="75" width="220" height="64"/>
+              <text class="node-text" x="1120" y="102" text-anchor="middle">Režim vstupu geometrie</text>
+              <text class="node-sub" x="1120" y="118" text-anchor="middle">kreslenie/parcely/výber mapy</text>
+
+              <!-- Lane 2 nodes -->
+              <rect class="node-core" x="80" y="255" width="220" height="64"/>
+              <text class="node-text" x="190" y="282" text-anchor="middle">Príprava geometrie pozemku</text>
+              <text class="node-sub" x="190" y="298" text-anchor="middle">snap, merge, validácia</text>
+
+              <rect class="node" x="370" y="255" width="230" height="64"/>
+              <text class="node-text" x="485" y="282" text-anchor="middle">Kontroly územia</text>
+              <text class="node-sub" x="485" y="298" text-anchor="middle">regulatívy, duplicity, PF prekryvy</text>
+
+              <rect class="node" x="670" y="255" width="255" height="64"/>
+              <text class="node-text" x="798" y="282" text-anchor="middle">Aktualizácia atribútov atlas=1</text>
+              <text class="node-sub" x="798" y="298" text-anchor="middle">PF prieniky, ID map, SP/PVP/PVV</text>
+
+              <rect class="node" x="980" y="255" width="250" height="64"/>
+              <text class="node-text" x="1105" y="282" text-anchor="middle">Tvorba JSON pre report</text>
+              <text class="node-sub" x="1105" y="298" text-anchor="middle">pozemok_attributes + poradie sekcií</text>
+
+              <!-- Lane 3 nodes -->
+              <polygon class="decision" points="190,467 235,430 280,467 235,504"/>
+              <text class="decision-text" x="235" y="471" text-anchor="middle">atlas=1?</text>
+
+              <rect class="node-core" x="320" y="435" width="220" height="64"/>
+              <text class="node-text" x="430" y="462" text-anchor="middle">UPI PDF pipeline</text>
+              <text class="node-sub" x="430" y="478" text-anchor="middle">First/2/3/Pozn/Rek/Last</text>
+
+              <rect class="node" x="590" y="405" width="210" height="64"/>
+              <text class="node-text" x="695" y="432" text-anchor="middle">Ortofoto vetva</text>
+              <text class="node-sub" x="695" y="448" text-anchor="middle">0/1/2 varianty podľa voľby</text>
+
+              <rect class="node" x="590" y="485" width="210" height="64"/>
+              <text class="node-text" x="695" y="512" text-anchor="middle">Stavebné okno vetva</text>
+              <text class="node-sub" x="695" y="528" text-anchor="middle">iba ak existuje uuid + hrany</text>
+
+              <polygon class="decision" points="860,467 905,430 950,467 905,504"/>
+              <text class="decision-text" x="905" y="471" text-anchor="middle">atlas=2?</text>
+
+              <rect class="node" x="980" y="435" width="250" height="64"/>
+              <text class="node-text" x="1105" y="462" text-anchor="middle">CMZ atribúty + CMZ PDF</text>
+              <text class="node-sub" x="1105" y="478" text-anchor="middle">CMZ 1/2/3/4 + stavebné okno</text>
+
+              <!-- Lane 4 nodes -->
+              <rect class="node-core" x="170" y="620" width="250" height="64"/>
+              <text class="node-text" x="295" y="647" text-anchor="middle">Finálne zlúčenie + číslovanie</text>
+              <text class="node-sub" x="295" y="663" text-anchor="middle">pdf_utils merge + page numbering</text>
+
+              <rect class="node" x="500" y="620" width="230" height="64"/>
+              <text class="node-text" x="615" y="647" text-anchor="middle">Uloženie na disk</text>
+              <text class="node-sub" x="615" y="663" text-anchor="middle">custom path / D:/UPI / cloud</text>
+
+              <polygon class="decision" points="800,652 845,620 890,652 845,684"/>
+              <text class="decision-text" x="845" y="656" text-anchor="middle">upload?</text>
+
+              <rect class="node" x="930" y="620" width="200" height="64"/>
+              <text class="node-text" x="1030" y="647" text-anchor="middle">AGOL addFeatures</text>
+              <text class="node-sub" x="1030" y="663" text-anchor="middle">+ addAttachment PDF</text>
+
+              <polygon class="decision" points="1190,652 1235,620 1280,652 1235,684"/>
+              <text class="decision-text" x="1235" y="656" text-anchor="middle">Word?</text>
+
+              <rect class="node" x="1310" y="620" width="130" height="64"/>
+              <text class="node-text" x="1375" y="647" text-anchor="middle">DOCX export</text>
+              <text class="node-sub" x="1375" y="663" text-anchor="middle">docxtpl</text>
+
+              <!-- Edges lane 1 -->
+              <path class="edge" d="M260 107 L330 107"/>
+              <path class="edge" d="M520 107 L600 107"/>
+              <path class="edge-alt" d="M680 107 L730 107"/>
+              <text class="label-alt" x="700" y="97">áno</text>
+              <path class="edge-alt" d="M640 139 L640 210 L1010 210 L1010 107"/>
+              <text class="label-alt" x="648" y="154">nie</text>
+              <path class="edge" d="M950 107 L1010 107"/>
+
+              <!-- lane1 -> lane2 -->
+              <path class="edge" d="M1120 139 L1120 225 L190 225 L190 255"/>
+
+              <!-- Edges lane 2 -->
+              <path class="edge" d="M300 287 L370 287"/>
+              <path class="edge" d="M600 287 L670 287"/>
+              <path class="edge" d="M925 287 L980 287"/>
+
+              <!-- lane2 -> lane3 -->
+              <path class="edge" d="M1105 319 L1105 405 L235 405 L235 430"/>
+
+              <!-- lane 3 flow -->
+              <path class="edge-alt" d="M280 467 L320 467"/>
+              <text class="label-alt" x="288" y="455">áno</text>
+              <path class="edge-alt" d="M235 504 L235 705 L145 705 L145 652 L170 652"/>
+              <text class="label-alt" x="243" y="520">nie</text>
+              <path class="edge" d="M540 467 L590 467"/>
+              <path class="edge" d="M430 499 L430 517 L590 517"/>
+              <path class="edge" d="M800 467 L860 467"/>
+              <path class="edge-alt" d="M950 467 L980 467"/>
+              <text class="label-alt" x="956" y="455">áno</text>
+              <path class="edge-alt" d="M905 504 L905 730 L145 730 L145 652 L170 652"/>
+              <text class="label-alt" x="914" y="520">nie</text>
+
+              <!-- lane3 -> lane4 -->
+              <path class="edge" d="M1230 467 L1230 590 L295 590 L295 620"/>
+
+              <!-- lane 4 flow -->
+              <path class="edge" d="M420 652 L500 652"/>
+              <path class="edge" d="M730 652 L800 652"/>
+              <path class="edge-alt" d="M890 652 L930 652"/>
+              <text class="label-alt" x="898" y="640">áno</text>
+              <path class="edge-alt" d="M845 684 L845 715 L1460 715"/>
+              <text class="label-alt" x="854" y="701">nie</text>
+              <path class="edge" d="M1130 652 L1190 652"/>
+              <path class="edge-alt" d="M1280 652 L1310 652"/>
+              <text class="label-alt" x="1288" y="640">áno</text>
+              <path class="edge-alt" d="M1235 684 L1235 715 L1460 715"/>
+              <text class="label-alt" x="1243" y="701">nie</text>
+
+              <!-- final terminator line -->
+              <line x1="1460" y1="700" x2="1460" y2="730" stroke="#193d8d" stroke-width="2"/>
+              <text class="node-text" x="1460" y="748" text-anchor="middle">Koniec procesu</text>
+            </svg>
           </div>
         </article>
 
@@ -607,7 +794,7 @@
     function syncTabWithHash() {
       const h = location.hash;
       const userHashes = ["#tab-user", "#sekcia-funkcie"];
-      const techHashes = ["#tab-tech", "#sekcia-layout-detail", "#sekcia-limity", "#sekcia-vrstvy", "#sekcia-agol"];
+      const techHashes = ["#tab-tech", "#sekcia-flowchart", "#sekcia-layout-detail", "#sekcia-limity", "#sekcia-vrstvy", "#sekcia-agol"];
       const l2Hashes = ["#tab-l2"];
       const l3Hashes = ["#tab-l3"];
 
