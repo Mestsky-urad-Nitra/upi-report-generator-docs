@@ -227,6 +227,7 @@
         <a href="#sekcia-flowchart">Workflow flowchart</a>
         <a href="#sekcia-funkcie">Funkcie a moznosti</a>
         <a href="#sekcia-layout-detail">Detail layoutov</a>
+        <a href="#sekcia-stavebne-okno">Stavebne okno - detail</a>
         <a href="#sekcia-limity">Limity a defaulty</a>
         <a href="#sekcia-vrstvy">Vrstvy a layouty</a>
         <a href="#sekcia-agol">AGOL integracia</a>
@@ -553,6 +554,101 @@
           </p>
         </article>
 
+        <article id="sekcia-stavebne-okno" class="section">
+          <h3>Stavebne okno - podrobna logika ciar a offsetov</h3>
+          <p>
+            Workflow stavebneho okna je riadeny modulmi <code>edge_utils.py</code> a <code>edge_wizard.py</code>.
+            Uzivatel klasifikuje jednotlive hrany obvodu pozemku a system z toho zostroji ciary, kolmé kóty
+            a polygony BASE / M / Y.
+          </p>
+
+          <table class="deep-table">
+            <thead>
+              <tr>
+                <th>Typ hrany vo wizardi</th>
+                <th>Vstup od uzivatela</th>
+                <th>Ako sa vypocita offset M</th>
+                <th>Ako sa vypocita offset Y</th>
+                <th>Ako sa vypocita BASE</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>SP</strong> (obytne)</td>
+                <td>1 hodnota: vzdialenost pre obytne miestnosti</td>
+                <td>fixne <code>2.0 m</code></td>
+                <td><code>d_stav</code> (zadana hodnota)</td>
+                <td><code>0.0 m</code></td>
+              </tr>
+              <tr>
+                <td><strong>PP</strong> (PVP / ulicna ciara)</td>
+                <td>2 hodnoty: <code>d_rezerva</code> + <code>d_stav</code></td>
+                <td><code>d_rezerva + d_stav</code></td>
+                <td><code>d_rezerva + d_stav</code></td>
+                <td><code>d_rezerva</code></td>
+              </tr>
+              <tr>
+                <td><strong>SPECI</strong></td>
+                <td>2 hodnoty: obytne + neobytne</td>
+                <td><code>d_rezerva</code> (neobytne)</td>
+                <td><code>d_stav</code> (obytne)</td>
+                <td><code>0.0 m</code></td>
+              </tr>
+              <tr>
+                <td><strong>PVV</strong></td>
+                <td>bez vstupu (0/0)</td>
+                <td><code>0.0 m</code></td>
+                <td><code>0.0 m</code></td>
+                <td><code>0.0 m</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4 style="margin:14px 0 8px; color:#193d8d;">Predvolene hodnoty SP (automaticky navrh)</h4>
+          <p style="margin-top:0;">
+            Pri type <code>SP</code> sa dialog predvyplni hodnotou z tabulky <code>OFFSETS_TABLE</code>
+            podla kombinacie <strong>vyska_zastavby</strong> a <strong>pfc_skr</strong>:
+          </p>
+          <table class="deep-table">
+            <thead>
+              <tr>
+                <th>Vyska</th>
+                <th>Kategoria A</th>
+                <th>Kategoria B</th>
+                <th>Kategoria C</th>
+                <th>Kategoria D</th>
+                <th>Kategoria E</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>2NP</td><td>5.0</td><td>5.0</td><td>5.0</td><td>5.0</td><td>0.0</td></tr>
+              <tr><td>4NP</td><td>10.0</td><td>12.0</td><td>12.0</td><td>9.0</td><td>0.0</td></tr>
+              <tr><td>6NP</td><td>15.0</td><td>19.0</td><td>19.0</td><td>13.0</td><td>0.0</td></tr>
+              <tr><td>8NP</td><td>0.0</td><td>26.0</td><td>26.0</td><td>0.0</td><td>0.0</td></tr>
+            </tbody>
+          </table>
+
+          <h4 style="margin:14px 0 8px; color:#193d8d;">Co sa realne kresli</h4>
+          <ul>
+            <li><strong>Hranicove ciary</strong> pre tri pasma: <code>BASE</code>, <code>M</code>, <code>Y</code>.</li>
+            <li><strong>Vnutorne kolme kóty</strong> na reprezentativnych bodoch hrany (33/50/66 % dlzky segmentu).</li>
+            <li><strong>Obvodove kóty</strong> po obvode uzemia (offset cca 0.8 m von).</li>
+            <li><strong>Polygony pasiem</strong> sa ukladaju do vrstvy <code>Stavebné polygóny</code> ako:
+              <code>REST</code>, <code>BASE</code>, <code>M</code>, <code>Y</code>.</li>
+          </ul>
+
+          <h4 style="margin:14px 0 8px; color:#193d8d;">Do ktorych vrstiev sa zapisuje</h4>
+          <ul>
+            <li><code>Stavebné hrany</code>: ciary + kóty, atributy <code>kategoria</code>, <code>offset</code>, <code>uuid</code>, <code>user_name</code>.</li>
+            <li><code>Stavebné polygóny</code>: vypocitane plochy s <code>typ_hrany</code> (REST/BASE/M/Y) a <code>offset_val</code>.</li>
+          </ul>
+
+          <p class="footer-note">
+            Dolezite: vypocet je robustny na geometriu (makeValid, buffer/simplify kroky) a pred kazdym zapisom
+            maze starsie vysledky pre aktualneho uzivatela, aby nevznikali konflikty medzi behmi.
+          </p>
+        </article>
+
         <article id="sekcia-limity" class="section">
           <h3>Limity, nastavenia a defaulty procesu</h3>
           <ul>
@@ -794,7 +890,7 @@
     function syncTabWithHash() {
       const h = location.hash;
       const userHashes = ["#tab-user", "#sekcia-funkcie"];
-      const techHashes = ["#tab-tech", "#sekcia-flowchart", "#sekcia-layout-detail", "#sekcia-limity", "#sekcia-vrstvy", "#sekcia-agol"];
+      const techHashes = ["#tab-tech", "#sekcia-flowchart", "#sekcia-layout-detail", "#sekcia-stavebne-okno", "#sekcia-limity", "#sekcia-vrstvy", "#sekcia-agol"];
       const l2Hashes = ["#tab-l2"];
       const l3Hashes = ["#tab-l3"];
 
