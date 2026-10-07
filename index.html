@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UPI Report Generator - Dokumentacia</title>
+  <style>
+    :root {
+      --bg: #f6f8fc;
+      --card: #ffffff;
+      --text: #1f2a44;
+      --muted: #5b6a8a;
+      --line: #d9e1f2;
+      --primary: #193d8d;
+      --primary-soft: #eaf0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.45;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+    .sidebar {
+      background: #0f2d6e;
+      color: #fff;
+      padding: 20px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+    }
+    .sidebar h1 {
+      font-size: 18px;
+      margin: 0 0 6px;
+      line-height: 1.3;
+    }
+    .sidebar p {
+      margin: 0 0 16px;
+      font-size: 13px;
+      color: #d5def5;
+    }
+    .menu-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #b9c8ef;
+      margin: 16px 0 8px;
+    }
+    .menu a {
+      display: block;
+      color: #eef3ff;
+      text-decoration: none;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .menu a:hover { background: rgba(255,255,255,.12); }
+    main {
+      padding: 26px;
+      max-width: 1200px;
+      width: 100%;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .topbar h2 {
+      margin: 0;
+      font-size: 26px;
+      color: var(--primary);
+    }
+    .pill-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill {
+      background: var(--primary-soft);
+      border: 1px solid #c8d6ff;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 999px;
+      padding: 5px 10px;
+    }
+    .pill-btn {
+      background: var(--primary-soft);
+      border: 1px solid #c8d6ff;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+    .pill-btn:hover { background: #dfe9ff; }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin: 6px 0 18px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .tab-btn.active {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 17px;
+      color: var(--primary);
+    }
+    .card ul { margin: 0; padding-left: 18px; }
+    .card li { margin: 4px 0; }
+    .section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+    .section h3 {
+      margin: 0 0 10px;
+      color: var(--primary);
+    }
+    .flow {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .flow-step {
+      border: 1px solid #c7d6fb;
+      background: #f9fbff;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 14px;
+    }
+    code {
+      background: #f1f5ff;
+      border: 1px solid #dbe6ff;
+      border-radius: 6px;
+      padding: 2px 6px;
+    }
+    .footer-note {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 10px;
+    }
+    .deep-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .deep-table th, .deep-table td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .deep-table th {
+      background: #f1f5ff;
+      color: var(--primary);
+    }
+    @media print {
+      .sidebar { display: none; }
+      .layout { grid-template-columns: 1fr; }
+      main { padding: 0; }
+      .tabs { display: none; }
+      .tab-panel { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h1>UPI Report Generator</h1>
+      <p>Graficka dokumentacia pluginu pre pouzivatelov aj vyvojarov.</p>
+
+      <div class="menu-title">Rychly pristup</div>
+      <nav class="menu">
+        <a href="#tab-user">Pouzivatelska cast</a>
+        <a href="#tab-tech">Technicka cast</a>
+        <a href="#tab-l2">Deep Dive: Layout 2</a>
+        <a href="#tab-l3">Deep Dive: Layout 3</a>
+        <a href="#sekcia-funkcie">Funkcie a moznosti</a>
+        <a href="#sekcia-layout-detail">Detail layoutov</a>
+        <a href="#sekcia-limity">Limity a defaulty</a>
+        <a href="#sekcia-vrstvy">Vrstvy a layouty</a>
+        <a href="#sekcia-agol">AGOL integracia</a>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <h2>Dokumentacia pluginu</h2>
+        <div class="pill-row">
+          <button id="pill-qgis" class="pill-btn" type="button">QGIS Plugin</button>
+          <button id="pill-upi" class="pill-btn" type="button">UPI + CMZ</button>
+          <button id="pill-agol" class="pill-btn" type="button">AGOL Upload</button>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button id="btn-user" class="tab-btn active" type="button">Pouzivatelska prirucka</button>
+        <button id="btn-tech" class="tab-btn" type="button">Technicka dokumentacia</button>
+        <button id="btn-l2" class="tab-btn" type="button">Deep Dive: Layout 2</button>
+        <button id="btn-l3" class="tab-btn" type="button">Deep Dive: Layout 3</button>
+      </div>
+
+      <section id="tab-user" class="tab-panel active">
+        <div class="grid">
+          <article class="card">
+            <h3>Co plugin robi</h3>
+            <ul>
+              <li>Pripravi geometriu pozemku (kreslenie, parcely, vyber v mape).</li>
+              <li>Skontroluje kolizie a upozornenia v uzemi.</li>
+              <li>Vygeneruje PDF report (hlavna cast + CMZ cast).</li>
+              <li>Volitelne nahra PDF do AGOL a vytvori Word priloha.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Defaulty</h3>
+            <ul>
+              <li>AGOL default ON pre <code>mokrasova</code> a <code>kondrla</code>.</li>
+              <li>AGOL default OFF pre ostatnych.</li>
+              <li>3D strana je odstranena.</li>
+              <li>Word a ortofoto su default OFF.</li>
+            </ul>
+          </article>
+        </div>
+
+        <div id="sekcia-funkcie" class="grid">
+          <article class="card">
+            <h3>Volby vo formulari</h3>
+            <ul>
+              <li><code>Cislo spisu</code> a <code>Interne oznacenie</code> - vstup pre metadata a nazvy suborov.</li>
+              <li><code>Regulacia reklam</code> - aktivuje reklamnu vetvu reportu (UPI Page Reklamy).</li>
+              <li><code>Zverejnit na AGOL</code> - po exporte ide PDF ako attachment do AGOL.</li>
+              <li><code>Definovat stavebne okno</code> - otvori wizard na klasifikaciu hran a odstupy.</li>
+              <li><code>Pridat ortofoto</code> - varianty <code>GKU aktualne</code> a/alebo <code>2022</code>.</li>
+              <li><code>Volitelny priecinok</code> - manualna cesta pre vysledny export.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Rezimy pripravy pozemku</h3>
+            <ul>
+              <li><strong>Zakreslit pozemok:</strong> multi polygon, snapping na mapu, Enter ulozi, Esc zrusi.</li>
+              <li><strong>Zadat parcely:</strong> CKN/EKN + KU + zoznam parcel oddeleny ciarkou.</li>
+              <li><strong>Oznacit parcely v mape:</strong> automaticke spracovanie po ukonceni vyberu.</li>
+              <li>System priebezne validuje, ci sa vstupne parcely realne nasli vo vrstvach.</li>
+            </ul>
+          </article>
+        </div>
+
+        <article class="section">
+          <h3>Odporucany postup</h3>
+          <div class="flow">
+            <div class="flow-step">1) Vypln cislo spisu + interne oznacenie.</div>
+            <div class="flow-step">2) Zvol rezim geometrie (kreslenie/parcely/vyber v mape).</div>
+            <div class="flow-step">3) Pripadne definuj stavebne okno.</div>
+            <div class="flow-step">4) Ak treba AGOL, prihlas sa a nechaj zapnuty AGOL checkbox.</div>
+            <div class="flow-step">5) Klikni Generovat report.</div>
+            <div class="flow-step">6) Volitelne vytvor Word prilohu.</div>
+          </div>
+        </article>
+
+        <article class="section">
+          <h3>Rozsirene funkcie pre vedenie (dokaz zlozitosti procesu)</h3>
+          <ul>
+            <li><strong>Regulacia reklam:</strong> nie je len checkbox, ale prepina podmienenu cast reportu a obsah textovej dokumentacie.</li>
+            <li><strong>Stavebne okno:</strong> samostatny interaktivny workflow, kde kazda hrana pozemku dostava typ a odstupy.</li>
+            <li><strong>Ortofoto:</strong> system vie pridat viac ortofoto variantov cez dedikovany layout pipeline.</li>
+            <li><strong>Exportny priecinok:</strong> manualny vyber cesty + fallback logika na dalsie umiestnenia.</li>
+            <li><strong>CMZ a mimo CMZ:</strong> plugin paralelne riesi dve vetvy dat (<code>atlas=1</code> a <code>atlas=2</code>) s odlisnou logikou.</li>
+          </ul>
+        </article>
+
+        <article class="section">
+          <h3>Najcastejsie problemy</h3>
+          <ul>
+            <li><strong>Vrstva nebola najdena:</strong> skontroluj presny nazov vrstvy.</li>
+            <li><strong>AGOL token chyba:</strong> odhlas/prihlas credentials.</li>
+            <li><strong>WinError 32:</strong> zavri otvorene PDF s rovnakym nazvom.</li>
+            <li><strong>Parcely sa nenasli:</strong> over KU, operat a zapis cisiel.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section id="tab-tech" class="tab-panel">
+        <div class="grid">
+          <article class="card">
+            <h3>Core moduly</h3>
+            <ul>
+              <li><code>main.py</code> - UI + orchestracia workflow.</li>
+              <li><code>pozemok_utils.py</code> - atributy mimo CMZ.</li>
+              <li><code>pozemok_cmz_utils.py</code> - atributy v CMZ.</li>
+              <li><code>pdf_report.py</code> a <code>pdf_report_cmz.py</code>.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Pomocne moduly</h3>
+            <ul>
+              <li><code>agol_utils.py</code> - REST AGOL integracia.</li>
+              <li><code>edge_utils.py</code> - stavebne hrany a plochy.</li>
+              <li><code>word_report.py</code> - DOCX render.</li>
+              <li><code>pdf_utils.py</code> - merge a cislovanie PDF.</li>
+            </ul>
+          </article>
+        </div>
+
+        <article class="section">
+          <h3>Pipeline generovania</h3>
+          <div class="flow">
+            <div class="flow-step">1) Validacia vstupov + AGOL login check.</div>
+            <div class="flow-step">2) Priprava/overenie geometrie pozemku.</div>
+            <div class="flow-step">3) Aktualizacia atributov (atlas=1) + JSON.</div>
+            <div class="flow-step">4) Export UPI PDF.</div>
+            <div class="flow-step">5) Ak existuje atlas=2, export CMZ PDF.</div>
+            <div class="flow-step">6) Volitelny AGOL upload a volitelny Word export.</div>
+          </div>
+        </article>
+
+        <article id="sekcia-layout-detail" class="section">
+          <h3>Detail layoutov a ich obsahova logika</h3>
+          <ul>
+            <li><strong>UPI First Page:</strong> uvodna strana reportu; pri urcitych typoch pozemku moze byt jedina strana (rezim ZONA).</li>
+            <li><strong>UPI Page 2, 3, Poznamky, Last Page:</strong> textove a regulativne jadro, finalne sa spaja a formatuje.</li>
+            <li><strong>UPI Page Reklamy:</strong> exportuje sa len ak je aktivna <code>regulacia_reklam</code>.</li>
+            <li><strong>Stavebne okno:</strong> pripaja sa iba vtedy, ked pre aktualne <code>uuid</code> existuju zaznamy v <code>Stavebne hrany</code>.</li>
+            <li><strong>UPI Page Ortofoto:</strong> generuje sa per variant (GKU aktualne / 2022), kazdy variant ma vlastny PDF subor.</li>
+            <li><strong>CMZ 1:</strong> mapova cast pre CMZ vetvu.</li>
+            <li><strong>CMZ 2, CMZ 3 spodrobnenie, CMZ 4 poznamky:</strong> textove CMZ bloky, nasledne zlucene do jedneho reportu.</li>
+          </ul>
+          <p class="footer-note">
+            Prakticky dosledok: finalny dokument nie je "jednoduchy export", ale skladanie viacerych podmienene generovanych stran.
+          </p>
+        </article>
+
+        <article id="sekcia-limity" class="section">
+          <h3>Limity, nastavenia a defaulty procesu</h3>
+          <ul>
+            <li><strong>Agregacia kombinacii PF:</strong> pri niektorych kombinaciach sa pouziju maximalne prve 4 unikaty podla plochy.</li>
+            <li><strong>Klasifikacia pre Word:</strong> minimalny prienik je filtrovanim nastaveny na 1.0 m2.</li>
+            <li><strong>Text parcel v atributoch:</strong> pri dlhsich zoznamoch sa skracuje na 80 znakov.</li>
+            <li><strong>Porovnanie geometrie pri rezime parciel:</strong> tolerance check je 0.0001.</li>
+            <li><strong>Negativny buffer:</strong> ak zlyha (uzky pozemok), system bezpecne fallbackne na povodnu geometriu.</li>
+            <li><strong>Output path fallback:</strong> 1) uzivatelom zvoleny priecinok, 2) <code>D:/UPI/2026</code>, 3) cloud cesta.</li>
+            <li><strong>AGOL credentials:</strong> ukladaju sa do QGIS settings, bez nich upload neprebehne.</li>
+          </ul>
+        </article>
+
+        <article id="sekcia-vrstvy" class="section">
+          <h3>Kriticke zavislosti: vrstvy a layouty</h3>
+          <p><strong>Vrstvy:</strong> <code>Pozemok</code>, <code>PF Blok</code>, <code>Hranica CMZ</code>, <code>KU Hranice</code>, <code>Regulacne lokality</code>, <code>Stavebne hrany</code>.</p>
+          <p><strong>UPI layouty:</strong> <code>UPI First Page</code>, <code>UPI Page 2</code>, <code>UPI Page 3</code>, <code>UPI Page Poznamky</code>, <code>UPI Page Reklamy</code>, <code>UPI Last Page</code>, <code>Stavebne okno</code>, <code>UPI Page Ortofoto</code>.</p>
+          <p><strong>CMZ layouty:</strong> <code>CMZ 1</code>, <code>CMZ 2</code>, <code>CMZ 3 spodrobnenie</code>, <code>CMZ 4 poznamky</code>.</p>
+        </article>
+
+        <article class="section">
+          <h3>Procesna narocnost (zrozumitelne pre nadriadenych)</h3>
+          <div class="flow">
+            <div class="flow-step">A) Geometria pozemku sa zbiera, cisti, deli na CMZ/mimo CMZ a validuje.</div>
+            <div class="flow-step">B) Vypocitava sa prienik s PF blokmi, KU hranicami, regulacnymi lokalitami a dalsimi vrstvami.</div>
+            <div class="flow-step">C) Agreguju sa rozne typy regulativov (SP/PVP/PVV/SP2ET), mapuju sa ID a tvoria sa JSON data.</div>
+            <div class="flow-step">D) Su bezane nezavisle kontroly kolizii (AGOL duplicity, vydane stanoviska, topologicke chyby PF).</div>
+            <div class="flow-step">E) Report sa sklada z viacerych podmienenych layoutov podla realneho stavu dat.</div>
+            <div class="flow-step">F) Nasledne prebieha cislovanie, finalne ulozenie, volitelny AGOL upload a volitelny Word export.</div>
+          </div>
+        </article>
+
+        <article id="sekcia-agol" class="section">
+          <h3>AGOL integracia</h3>
+          <ul>
+            <li>Transformacia geometrie: <code>EPSG:5514 -> EPSG:4326</code>.</li>
+            <li>Token: <code>/sharing/rest/generateToken</code>.</li>
+            <li>Zapis feature: <code>/FeatureServer/0/addFeatures</code>.</li>
+            <li>Priloha PDF: <code>/FeatureServer/0/&lt;OID&gt;/addAttachment</code>.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section id="tab-l2" class="tab-panel">
+        <article class="section">
+          <h3>UPI Page 2 - hlbkovy rozpis regulativov</h3>
+          <p>
+            Layout 2 je vystup z viacstupnovej agregacie prienikov medzi pozemkom a PF blokmi.
+            Vstupom je JSON <code>PozemokPlugin/pozemok_attributes</code>, ktory vznika po vypocte
+            atributov mimo CMZ a mapovani ID16.
+          </p>
+          <table class="deep-table">
+            <thead>
+              <tr>
+                <th>Blok</th>
+                <th>Zdroj dat</th>
+                <th>Co sa vykresluje</th>
+                <th>Poznamka k zlozitosti</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>RPU (priestor)</td>
+                <td><code>priestor_bezv</code> + mapovanie ID16</td>
+                <td>Zoskupene priestory a dotknute lokality</td>
+                <td>Deduplikacia + poradie podla plochy prieniku</td>
+              </tr>
+              <tr>
+                <td>RFV (funkcne vyuzitie)</td>
+                <td><code>funkcia_leg_dlha</code></td>
+                <td>Funkcne skupiny a vymera na funkciu</td>
+                <td>Sucasne sa riesia SP, SPAPVP, PVP a PVV vetvy</td>
+              </tr>
+              <tr>
+                <td>RVZ / RZ / RVP / ROV</td>
+                <td>PF atributy regulativov</td>
+                <td>Vyska, zastavanost, vegetacia, odstupy</td>
+                <td>Kazdy blok moze mat viac hodnot a viac lokalit naraz</td>
+              </tr>
+              <tr>
+                <td>PVP/PVV specializacie</td>
+                <td><code>rpu_pvp</code>, <code>rfv_pvv</code> atd.</td>
+                <td>Samostatne vetvy pre verejne priestory a vodstvo</td>
+                <td>Final sa spaja do jedneho PDF pribehu reportu</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="section">
+          <h3>Volby, ktore menia obsah Layout 2</h3>
+          <ul>
+            <li><strong>Regulacia reklam:</strong> ked je aktivna, vstupuje do pipeline dalsia regulacna strana.</li>
+            <li><strong>Stavebne okno:</strong> ak su data v <code>Stavebne hrany</code>, po hlavnych stranach sa pripaja dalsi layout.</li>
+            <li><strong>Ortofoto:</strong> kazdy vybrany variant pridava extra stranu (samostatny exportny job).</li>
+            <li><strong>Volitelny priecinok:</strong> meni finalnu distribuciu vystupu a interny save workflow.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section id="tab-l3" class="tab-panel">
+        <article class="section">
+          <h3>UPI Page 3 - hlbkovy rozpis a logika textovej skladby</h3>
+          <p>
+            Layout 3 je pokracovanie regulativneho jadra. Neriesi len "dalsi text",
+            ale systematicky deli velke mnozstvo pravidiel na citatelne bloky.
+          </p>
+          <div class="flow">
+            <div class="flow-step">1) Sekcie sa zoradia podla realnej dominancie ploch (SP/PVP/PVV/SP2ET).</div>
+            <div class="flow-step">2) Prazdne skupiny sa neforsiruju do vystupu (setri sa miesto aj citatelnost).</div>
+            <div class="flow-step">3) K jednej textualnej casti moze byt viazanych viac regulacnych lokalit.</div>
+            <div class="flow-step">4) Kombinuju sa vysvetlenia funkcii, poznamky a naviazane identifikatory.</div>
+          </div>
+        </article>
+
+        <article class="section">
+          <h3>Limity a rozhodovacie pravidla ovplyvnujuce Layout 3</h3>
+          <table class="deep-table">
+            <thead>
+              <tr>
+                <th>Mechanizmus</th>
+                <th>Hodnota / pravidlo</th>
+                <th>Dopad na vysledok</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Minimalny prienik pre klasifikaciu</td>
+                <td>1.0 m2</td>
+                <td>Mikro prieniky sa ignoruju, text je stabilnejsi</td>
+              </tr>
+              <tr>
+                <td>Max pocet agregovanych kombinacii</td>
+                <td>4 (podla plochy)</td>
+                <td>Zabranuje nekontrolovanemu rozsahu textu</td>
+              </tr>
+              <tr>
+                <td>Skracovanie parcelnych retazcov</td>
+                <td>80 znakov</td>
+                <td>Predchadza rozbitiu layoutu pri dlhych zoznamoch</td>
+              </tr>
+              <tr>
+                <td>Fallback pri uzkych geometriách</td>
+                <td><code>safe_negative_buffer</code> vrati povodnu geometriu</td>
+                <td>Report sa da dokončit aj pri geometricky citlivych parcelach</td>
+              </tr>
+              <tr>
+                <td>Tolerancia porovnania geometrie</td>
+                <td>0.0001</td>
+                <td>Brani nahodnym rozdielom pri validacii parcelnej vetvy</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+      </section>
+
+      <p class="footer-note">
+        Tip: subor mozes otvorit priamo v prehliadaci. Na export do PDF pouzi tlac
+        (Ctrl+P) a "Save as PDF".
+      </p>
+    </main>
+  </div>
+
+  <script>
+    const btnUser = document.getElementById("btn-user");
+    const btnTech = document.getElementById("btn-tech");
+    const btnL2 = document.getElementById("btn-l2");
+    const btnL3 = document.getElementById("btn-l3");
+    const panelUser = document.getElementById("tab-user");
+    const panelTech = document.getElementById("tab-tech");
+    const panelL2 = document.getElementById("tab-l2");
+    const panelL3 = document.getElementById("tab-l3");
+    const pillQgis = document.getElementById("pill-qgis");
+    const pillUpi = document.getElementById("pill-upi");
+    const pillAgol = document.getElementById("pill-agol");
+
+    function deactivateAll() {
+      btnUser.classList.remove("active");
+      btnTech.classList.remove("active");
+      btnL2.classList.remove("active");
+      btnL3.classList.remove("active");
+      panelUser.classList.remove("active");
+      panelTech.classList.remove("active");
+      panelL2.classList.remove("active");
+      panelL3.classList.remove("active");
+    }
+
+    function activateUser(updateHash = true) {
+      deactivateAll();
+      btnUser.classList.add("active");
+      panelUser.classList.add("active");
+      if (updateHash) location.hash = "tab-user";
+    }
+
+    function activateTech(updateHash = true) {
+      deactivateAll();
+      btnTech.classList.add("active");
+      panelTech.classList.add("active");
+      if (updateHash) location.hash = "tab-tech";
+    }
+
+    function activateL2(updateHash = true) {
+      deactivateAll();
+      btnL2.classList.add("active");
+      panelL2.classList.add("active");
+      if (updateHash) location.hash = "tab-l2";
+    }
+
+    function activateL3(updateHash = true) {
+      deactivateAll();
+      btnL3.classList.add("active");
+      panelL3.classList.add("active");
+      if (updateHash) location.hash = "tab-l3";
+    }
+
+    btnUser.addEventListener("click", () => activateUser());
+    btnTech.addEventListener("click", () => activateTech());
+    btnL2.addEventListener("click", () => activateL2());
+    btnL3.addEventListener("click", () => activateL3());
+
+    pillQgis.addEventListener("click", () => {
+      activateUser();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    pillUpi.addEventListener("click", () => {
+      activateL2();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    pillAgol.addEventListener("click", () => {
+      activateTech();
+      setTimeout(() => {
+        const agolSection = document.getElementById("sekcia-agol");
+        if (agolSection) {
+          agolSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 40);
+    });
+
+    function syncTabWithHash() {
+      const h = location.hash;
+      const userHashes = ["#tab-user", "#sekcia-funkcie"];
+      const techHashes = ["#tab-tech", "#sekcia-layout-detail", "#sekcia-limity", "#sekcia-vrstvy", "#sekcia-agol"];
+      const l2Hashes = ["#tab-l2"];
+      const l3Hashes = ["#tab-l3"];
+
+      if (l2Hashes.includes(h)) {
+        activateL2(false);
+      } else if (l3Hashes.includes(h)) {
+        activateL3(false);
+      } else if (techHashes.includes(h)) {
+        activateTech(false);
+      } else {
+        activateUser(false);
+      }
+    }
+
+    window.addEventListener("hashchange", syncTabWithHash);
+    syncTabWithHash();
+  </script>
+</body>
+</html>
