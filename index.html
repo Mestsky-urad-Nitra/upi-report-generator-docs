@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>UPI Report Generator – dokumentácia pluginu (v 2.6.10.7)</title>
+<title>UPI Report Generator – dokumentácia pluginu (v 2.6.10.21)</title>
 <style>
 :root{
   --ink:#1b2a41; --ink-2:#425466; --muted:#6b7a8c; --line:#d9e1ec; --line-2:#eef2f7;
@@ -129,7 +129,7 @@ footer{color:var(--muted); font-size:12.5px; text-align:center; padding:10px 0 3
 <header class="topbar">
   <div class="in">
     <div class="title">UPI Report Generator – dokumentácia<small>QGIS plugin „Generátor UPI“ · Mesto Nitra, Útvar hlavného architekta</small></div>
-    <div class="badge">verzia 2.6.10.7 · ZaD 07</div>
+    <div class="badge">verzia 2.6.10.21 · ZaD 07</div>
   </div>
   <nav class="tabs" id="tabs">
     <a href="#ch-prehlad">1 · Úvod a prehľad systému</a>
@@ -891,7 +891,7 @@ footer{color:var(--muted); font-size:12.5px; text-align:center; padding:10px 0 3
       <tr><td>4</td><td><span class="lay">UPI Page Poznamky</span><br><span class="small">Všeobecné poznámky</span></td><td><span class="tag always">vždy</span></td><td>Poznámkový aparát: vysvetlenia funkcií a priestorov, výšky zástavby, vegetačných plôch, zastavanosti a odkazov.</td></tr>
       <tr><td>5</td><td><span class="lay">UPI Page Reklamy</span><br><span class="small">Regulácia reklamy</span></td><td><span class="tag opt">voliteľné</span></td><td>Len pri zapnutom <span class="ui">Regulácia reklám:</span> a ak pozemok zasahuje do niektorej zóny regulácie informačných konštrukcií (VZN I/8.2).</td></tr>
       <tr><td>6</td><td><span class="lay">UPI Page Ortofoto</span></td><td><span class="tag opt">voliteľné</span></td><td>Jedna strana za každú zapnutú voľbu <span class="ui">GKU aktuálne</span> / <span class="ui">2022</span> (premenné projektu <code>upi_ortofoto_variant</code>, <code>upi_ortofoto_label</code>).</td></tr>
-      <tr><td>7</td><td><span class="lay">Stavebné okno</span></td><td><span class="tag cond">podmienené</span></td><td>Pripojí sa ako posledná strana, ak vo vrstve <span class="layer">Stavebné hrany</span> existujú hrany s UUID aktuálneho pozemku (kapitola 6).</td></tr>
+      <tr><td>7</td><td><span class="lay">Stavebné okno - voľná / kompaktná</span></td><td><span class="tag cond">podmienené</span></td><td>Pripojí sa ako posledná strana (jedna alebo dve) podľa toho, či vo vrstve <span class="layer">Stavebné hrany</span> existujú varianty <code>_V</code> a/alebo <code>_K</code> pre UUID aktuálneho pozemku (kapitola 6).</td></tr>
     </tbody>
   </table>
   <div class="callout violet"><b class="t">Režim „zóna“</b>Ak všetky časti typu pozemku obsahujú slovo „zóna“ (pozemok leží výlučne v území, ktoré rieši samostatný územný plán zóny), exportuje sa iba <span class="lay">UPI First Page</span> – jednostranový report s odkazom na ÚPN-Z.</div>
@@ -1015,7 +1015,7 @@ footer{color:var(--muted); font-size:12.5px; text-align:center; padding:10px 0 3
       <tr><td>2</td><td><span class="lay">CMZ 2</span></td><td><span class="tag always">vždy</span></td><td>„REGULATÍVY PRE STAVEBNÝ POZEMOK“: RPU, RFV (+ m²), poznámka k Hornému mestu (IV/5), RVZ, RZ, RVP, RSC – odkazy na G7, IV/7.</td></tr>
       <tr><td>3</td><td><span class="lay">CMZ 3 spodrobnenie</span></td><td><span class="tag cond">podmienené</span></td><td>Oddiely V–VIII VZN pre CMZ podľa typu pozemku a polohy (verejné priestory, začlenenie stavieb, zastavovacie podmienky, pamiatková rezervácia/zóna).</td></tr>
       <tr><td>4</td><td><span class="lay">CMZ 4 poznamky</span></td><td><span class="tag always">vždy</span></td><td>Vysvetlenia RFV (a) prevládajúce, b) prípustné doplnkové, c) neprípustné), vilové štvrte (IV/1), pojmy nadzemné podlažie (VI/15), ustúpené podlažie (VI/16), zníženie výšky zástavby (VI/17).</td></tr>
-      <tr><td>5</td><td><span class="lay">Stavebné okno</span></td><td><span class="tag cond">podmienené</span></td><td>Ako pri UPI reporte.</td></tr>
+      <tr><td>5</td><td><span class="lay">Stavebné okno - voľná</span></td><td><span class="tag cond">podmienené</span></td><td>Ako pri UPI reporte (CMZ vetva pripája voľnú variantu).</td></tr>
     </tbody>
   </table>
   <p>Pracovný priečinok <code>temp_cmz/</code>, výstup <code>&lt;spis&gt;_cmz.pdf</code>; skladanie, číslovanie a distribúcia sú rovnaké ako pri reporte UPI.</p>
@@ -1206,7 +1206,7 @@ footer{color:var(--muted); font-size:12.5px; text-align:center; padding:10px 0 3
 <!-- ===================================================== 6 ===================================================== -->
 <section class="ch" id="ch-okno">
   <h2>6 · Stavebné okno</h2>
-  <p class="lead">Tlačidlo <span class="btn-ui">📐 Definovať stavebné okno</span> spustí sprievodcu, ktorý z hraníc pozemku a odstupov podľa VZN zostrojí <b>stavebné okno</b> – plochu, kde možno umiestniť hlavnú budovu – vrátane kót. Výsledok sa pridá ako posledná strana reportu.</p>
+  <p class="lead">Tlačidlo <span class="btn-ui">📐 Definovať stavebné okno</span> spustí sprievodcu, ktorý z hraníc pozemku a odstupov podľa VZN zostrojí <b>stavebné okno</b> – plochu, kde možno umiestniť hlavnú budovu – vrátane kót. Výsledok sa pridá ako posledná strana reportu; pri kompaktných hranách SP je možné generovať voľnú aj kompaktnú variantu (jednu alebo obe).</p>
 
   <h3 id="o-priebeh">Priebeh sprievodcu</h3>
   <div class="fc-wrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 1338" width="960" height="1338" role="img" aria-label="Stavebné okno – priebeh sprievodcu" class="flowchart">
@@ -1313,9 +1313,9 @@ footer{color:var(--muted); font-size:12.5px; text-align:center; padding:10px 0 3
 <polygon class="fc-data" points="358,1106 614,1106 602,1176 346,1176"/>
 <text class="fc-t" x="480" y="1130.5" text-anchor="middle">Zápis do vrstiev</text>
 <text class="fc-ts" x="480" y="1145" text-anchor="middle">„Stavebné hrany“ (čiary + kóty)</text>
-<text class="fc-ts" x="480" y="1159.5" text-anchor="middle">„Stavebné polygóny“ (REST / BASE / M / Y)</text>
+<text class="fc-ts" x="480" y="1159.5" text-anchor="middle">„Stavebné polygóny“ (REST / BASE / DOP / M / Y)</text>
 <rect class="fc-term" x="315" y="1236" width="330" height="46" rx="23"/>
-<text class="fc-tw" x="480" y="1263" text-anchor="middle">Pri generovaní sa pripojí strana „Stavebné okno“</text>
+<text class="fc-tw" x="480" y="1263" text-anchor="middle">Pripojí sa „Stavebné okno - voľná / kompaktná“</text>
 </svg></div>
   <p class="fc-cap">Obr. 6 – Od kliknutia na tlačidlo po zápis do vrstiev.</p>
   <ol>
@@ -1331,8 +1331,8 @@ footer{color:var(--muted); font-size:12.5px; text-align:center; padding:10px 0 3
   <table>
     <thead><tr><th style="width:16%">Tlačidlo</th><th style="width:24%">Dialóg</th><th>Vstupy (predvolené)</th><th>Odstupy od hrany</th></tr></thead>
     <tbody>
-      <tr><td><span class="btn-ui">🏠 SP</span></td><td>„Odstup od suseda (SP)“</td><td>„Vzdialenosť pre obytné miestnosti (m):“ – predvolené z tabuľky odstupov podľa podlažnosti a kategórie</td><td>hranica pozemku 0 m · neobytné miestnosti <b>2 m</b> · obytné miestnosti = zadaná hodnota</td></tr>
-      <tr><td><span class="btn-ui">🛣️ PVP</span></td><td>„Nastavenie pre VP (PVP)“</td><td>„Územná rezerva (uličná čiara):“ (0,0 m) · „Hranica umiestnenia hl. budovy:“ (6,0 m)</td><td>hranica pozemku = územná rezerva · neobytné aj obytné = rezerva + hranica umiestnenia</td></tr>
+      <tr><td><span class="btn-ui">🏠 SP</span></td><td>„Odstup od suseda (SP)“ + (pri „kompaktná“ v priestore) voľba variantu</td><td>„Vzdialenosť pre obytné miestnosti (m):“ – predvolené z tabuľky odstupov podľa podlažnosti a kategórie; pri kompaktnom priestore voľba <b>Kompaktná</b>/<b>Voľná</b>/<b>Obe varianty</b></td><td>hranica pozemku 0 m · neobytné miestnosti: kompaktná <b>0 m</b> / voľná <b>2 m</b> · doplnkové stavby: kompaktná <b>0 m</b> / voľná <b>1 m</b> · obytné miestnosti = zadaná hodnota</td></tr>
+      <tr><td><span class="btn-ui">🛣️ PVP</span></td><td>„Nastavenie pre VP (PVP)“</td><td>„Územná rezerva (uličná čiara):“ (0,0 m) · „Hranica umiestnenia hl. budovy:“ (6,0 m)</td><td>hranica pozemku = územná rezerva · neobytné/obytné/doplnkové = územná rezerva + hranica umiestnenia</td></tr>
       <tr><td><span class="btn-ui">🌳 PVV</span></td><td>–</td><td>bez vstupu</td><td>všetky odstupy 0 m (hranica k vode / zeleni)</td></tr>
       <tr><td><span class="btn-ui">⚙️ Špeci</span></td><td>„Manuálne nastavenie odstupov“</td><td>„Neobytné miestnosti (magenta):“ · „Obytné miestnosti (žltá):“</td><td>hranica pozemku 0 m · neobytné = prvá hodnota · obytné = druhá hodnota</td></tr>
       <tr><td><span class="btn-ui">⬅️ Späť</span></td><td>–</td><td>–</td><td>návrat k predchádzajúcej hrane</td></tr>
@@ -1362,13 +1362,13 @@ footer{color:var(--muted); font-size:12.5px; text-align:center; padding:10px 0 3
   <h3 id="o-vystup">Grafický výstup a zápis do vrstiev</h3>
   <div class="grid g2">
     <div class="card"><h4>Vrstva „Stavebné hrany“ (línie)</h4>
-      <ul><li><b>hranica stavebného pozemku</b> (BASE)</li><li><b>stavebná čiara – neobytné miestnosti</b> (M, magenta)</li><li><b>stavebná čiara – obytné miestnosti</b> (Y, žltá)</li><li><b>kóta</b> – kolmé kóty odstupov v 33 / 50 / 66 % dĺžky hrany a obvodové kóty 0,8 m od hrany</li></ul>
-      <p class="small">Atribúty: <code>kategoria</code>, <code>offset</code>, <code>uuid</code>, <code>user_name</code>.</p></div>
+      <ul><li><b>hranica stavebného pozemku</b> (BASE)</li><li><b>stavebná čiara – doplnkové stavby</b> (DOP)</li><li><b>stavebná čiara – neobytné miestnosti</b> (M, magenta)</li><li><b>stavebná čiara – obytné miestnosti</b> (Y, žltá)</li><li><b>kóta</b> – kolmé kóty odstupov v 33 / 50 / 66 % dĺžky hrany; obvodové kóty len na úsekoch dotknutých zeleňou/VPS</li></ul>
+      <p class="small">Atribúty: <code>kategoria</code>, <code>offset</code>, <code>typ_hrany</code>, <code>uuid</code>, <code>user_name</code>. Suffix <code>_V</code>/<code>_K</code> v <code>typ_hrany</code> odlišuje voľnú a kompaktnú variantu.</p></div>
     <div class="card"><h4>Vrstva „Stavebné polygóny“ (plochy)</h4>
-      <ul><li><b>REST</b> – posudzované územie – rezerva (odpočítané plochy)</li><li><b>BASE</b> – stavebný pozemok po odpočítaní rezervy</li><li><b>M</b> – plocha pre neobytné miestnosti</li><li><b>Y</b> – plocha pre obytné miestnosti (vlastné stavebné okno)</li></ul>
+      <ul><li><b>REST</b> – posudzované územie – rezerva (odpočítané plochy)</li><li><b>BASE</b> – stavebný pozemok po odpočítaní rezervy</li><li><b>DOP</b> – plocha pre doplnkové stavby</li><li><b>M</b> – plocha pre neobytné miestnosti</li><li><b>Y</b> – plocha pre obytné miestnosti (vlastné stavebné okno)</li></ul>
       <p class="small">Atribúty: <code>typ_hrany</code>, <code>offset_val</code>, <code>kategoria</code>, <code>uuid</code>, <code>user_name</code>.</p></div>
   </div>
-  <div class="callout ok"><b class="t">Prepojenie s reportom</b>Pri generovaní plugin skontroluje, či vo vrstve <span class="layer">Stavebné hrany</span> existujú prvky s UUID pozemku. Ak áno, zapíše do JSON <code>ma_stavebne_okno = true</code> (regulatív stavebnej čiary dostane odkaz na stranu) a ako poslednú stranu pripojí layout <span class="lay">Stavebné okno</span>.</div>
+  <div class="callout ok"><b class="t">Prepojenie s reportom</b>Pri generovaní plugin skontroluje, či vo vrstve <span class="layer">Stavebné hrany</span> existujú prvky s UUID pozemku. Ak áno, zapíše do JSON <code>ma_stavebne_okno = true</code> (regulatív stavebnej čiary dostane odkaz na stranu) a ako posledné strany pripojí layouty <span class="lay">Stavebné okno - voľná</span> a/alebo <span class="lay">Stavebné okno - kompaktná</span> podľa dostupných variantov (<code>typ_hrany</code> suffix <code>_V</code>/<code>_K</code>).</div>
 </section>
 
 <!-- ===================================================== 7 ===================================================== -->
@@ -1457,12 +1457,13 @@ footer{color:var(--muted); font-size:12.5px; text-align:center; padding:10px 0 3
 <tr><td><span class='lay'>UPI Page Poznamky</span></td><td><code> &quot;atlas&quot; = 1 AND &quot;user_name&quot; = @user_account_name </code></td><td>–</td></tr>
 <tr><td><span class='lay'>UPI Page Reklamy</span></td><td><code> &quot;atlas&quot; = 1 -- AND &quot;user_name&quot; = @user_account_name </code></td><td>–</td></tr>
 <tr><td><span class='lay'>UPI Page Ortofoto</span></td><td><code>&quot;id&quot; = @feature_id</code></td><td>GKU → téma „Ortofoto GKU aktuálne“, 2022 → téma „Ortofoto 2022“</td></tr>
-<tr><td><span class='lay'>Stavebné okno</span></td><td><code>bez filtra (všetky prvky)</code></td><td>Map 1 → téma „Stavebné okno“</td></tr>
+<tr><td><span class='lay'>Stavebné okno - voľná</span></td><td><code>bez filtra (všetky prvky)</code></td><td>Map 1 → téma „Stavebné okno - voľná“</td></tr>
+<tr><td><span class='lay'>Stavebné okno - kompaktná</span></td><td><code>bez filtra (všetky prvky)</code></td><td>Map 1 → téma „Stavebné okno - kompaktná“</td></tr>
 <tr><td><span class='lay'>CMZ 1</span></td><td><code> &quot;atlas&quot; = 2</code></td><td>Mapa veľká → téma „CMZ Farebna“, Mapa malá → téma „CMZ Minimapa“</td></tr>
 <tr><td><span class='lay'>CMZ 2</span></td><td><code> &quot;atlas&quot; = 2 AND &quot;user_name&quot; = @user_account_name</code></td><td>–</td></tr>
 <tr><td><span class='lay'>CMZ 3 spodrobnenie</span></td><td><code> &quot;atlas&quot; = 2 AND &quot;user_name&quot; = @user_account_name</code></td><td>–</td></tr>
 <tr><td><span class='lay'>CMZ 4 poznamky</span></td><td><code> &quot;atlas&quot; = 2 AND &quot;user_name&quot; = @user_account_name</code></td><td>–</td></tr></tbody></table>
-  <p class="small">Layout <span class="lay">UPI First Top Page</span> je v projekte prítomný, plugin ho však pri skladaní reportu nepoužíva. Layout <span class="lay">Stavebné okno</span> je spoločný pre obidve vetvy a zaradí sa len vtedy, keď pre pozemok existujú prvky vo vrstve Stavebné hrany (<code>"uuid" = uuid pozemku</code>).</p>
+  <p class="small">Layout <span class="lay">UPI First Top Page</span> je v projekte prítomný, plugin ho však pri skladaní reportu nepoužíva. Layouty <span class="lay">Stavebné okno - voľná</span> a <span class="lay">Stavebné okno - kompaktná</span> sa zaraďujú podmienečne podľa toho, či pre pozemok existujú prvky varianty <code>_V</code> a/alebo <code>_K</code> vo vrstve Stavebné hrany.</p>
 
   <h3 id="p-temy">Mapové témy</h3>
   <p>Mapové položky v layoutoch nesledujú aktuálne zapnuté vrstvy v okne QGIS, ale <b>mapovú tému</b> (uloženú kombináciu viditeľnosti a štýlov). Vďaka tomu je obsah máp v reporte nezávislý od toho, čo má používateľ práve zobrazené. Témy <i>PFCelky k oprave</i>, <i>Testovacia</i> a <i>Tonova</i> sú pracovné a žiadny layout ich nepoužíva.</p>
@@ -1516,7 +1517,7 @@ footer{color:var(--muted); font-size:12.5px; text-align:center; padding:10px 0 3
 <tr><td style='padding-left:10px'><b>Parcely KN-C</b></td><td>polygón<br><span class='small'>PostGIS</span></td><td><code>kataster.parcely</code></td><td>–</td><td><i class="swl" style="background:#000000" title="#000000"></i> jeden symbol <span class="small">viditeľné do 1:11000</span></td><td><code>parcela</code> (do 1:10000)</td><td>režim „Označiť parcely v mape“; podklad v mapách</td></tr>
 <tr><td style='padding-left:10px'><b>Parcely KN-E</b> <span class="tag off">vyp.</span></td><td>polygón<br><span class='small'>PostGIS</span></td><td><code>kataster.parcely_ekn</code></td><td>–</td><td><i class="sw" style="background:transparent;border-color:#24d81e" title="výplň #7d8b8f, obrys #24d81e"></i> jeden symbol </td><td><code>parcela</code></td><td>podklad stavebného okna</td></tr>
 <tr><td style='padding-left:10px'><b>Budovy</b> <span class="tag off">vyp.</span></td><td>polygón<br><span class='small'>PostGIS</span></td><td><code>kataster.budovy</code></td><td>–</td><td><i class="sw" style="background:#969696;opacity:1.0;border-color:#f7f7f7" title="výplň #969696, obrys #f7f7f7"></i> jeden symbol </td><td><code>drs</code> (do 1:1000)</td><td>špeciálny prípad 2 výšky zástavby (drs 10/11)</td></tr>
-<tr><td style='padding-left:10px'><b>Stavebné polygóny</b> <span class="tag off">vyp.</span></td><td>polygón<br><span class='small'>PostGIS</span></td><td><code>shared_editable.stavebne_polygony</code></td><td>–</td><td>kategorizovaný podľa <code>kategoria</code> (4 kategórií) <span class="small">priehľadnosť 50 %</span></td><td>–</td><td>výstup stavebného okna (plochy)</td></tr>
+<tr><td style='padding-left:10px'><b>Stavebné polygóny</b> <span class="tag off">vyp.</span></td><td>polygón<br><span class='small'>PostGIS</span></td><td><code>shared_editable.stavebne_polygony</code></td><td>–</td><td>kategorizovaný podľa <code>kategoria</code> (5 kategórií) <span class="small">priehľadnosť 50 %</span></td><td>–</td><td>výstup stavebného okna (plochy)</td></tr>
 <tr><td style='padding-left:10px'><b>Pozemok AGOL</b> <span class="tag off">vyp.</span></td><td>polygón<br><span class='small'>ArcGIS FS</span></td><td><span class="small">services-eu1.arcgis.com</span></td><td>–</td><td><i class="sw" style="background:#e41a1c;opacity:1.0;border-color:#800e10" title="výplň #e41a1c, obrys #800e10"></i> jeden symbol </td><td><code>user_name</code></td><td>kontrola duplicity reportu (≥ 98 %)</td></tr>
 <tr class='grp'><td colspan='7' style='padding-left:10px'>Skupina „KÚ - jednotlivo“ (22 vrstiev) – predvolene vypnutá</td></tr>
 <tr><td style='padding-left:24px'><b>ckn_812021</b> <span class="tag off">vyp.</span></td><td>polygón<br><span class='small'>PostGIS</span></td><td><code>kataster.ckn_812021</code></td><td>–</td><td><i class="sw" style="background:#729b6f;opacity:1.0;border-color:#232323" title="výplň #729b6f, obrys #232323"></i> jeden symbol </td><td><code>parcela</code></td><td>parcely registra C pre KÚ 812021 – režim „Zadať parcely“</td></tr>
@@ -2313,9 +2314,10 @@ footer{color:var(--muted); font-size:12.5px; text-align:center; padding:10px 0 3
 <tr><td><i class="sw" style="background:#a500dd;opacity:1.0;border-color:#ffffff" title="výplň #a500dd, obrys #ffffff"></i></td><td>vybavenosť</td><td><code>vybavenosť</code></td></tr>
 <tr><td><i class="sw" style="background:#c2cab7;opacity:1.0;border-color:#ffffff" title="výplň #c2cab7, obrys #ffffff"></i></td><td>dopravné zariadenia</td><td><code>dopravné zariadenia</code></td></tr>
 <tr><td><i class="sw" style="background:#ffdf7f;opacity:1.0;border-color:#ffffff" title="výplň #ffdf7f, obrys #ffffff"></i></td><td>parkovisko viacúrovňové</td><td><code>parkovisko viacúrovňové</code></td></tr></tbody></table></div></details>
-<details><summary>Stavebné polygóny – kategorizovaný podľa <code>kategoria</code> (4 kategórií)</summary><div class='body'><p class='small'>Zdroj: <code>shared_editable.stavebne_polygony</code></p><table class='compact'><thead><tr><th style='width:6%'>Farba</th><th>Kategória</th><th style='width:34%'>Hodnota</th></tr></thead><tbody><tr><td><i class="sw" style="background:#e0e0e0;opacity:1.0;border-color:#97c4e5" title="výplň #e0e0e0, obrys #97c4e5"></i></td><td>hranica stavebného pozemku</td><td><code>hranica stavebného pozemku</code></td></tr>
-<tr><td><i class="sw" style="background:#c7c7c7;opacity:1.0;border-color:#9aa5b4" title="výplň #c7c7c7, obrys #6498d2"></i></td><td>stavebná čiara - neobytné miestnosti</td><td><code>stavebná čiara - neobytné miestnosti</code></td></tr>
-<tr><td><i class="sw" style="background:#747474;opacity:1.0;border-color:#6498d2" title="výplň #747474, obrys #6498d2"></i></td><td>stavebná čiara - obytné miestnosti</td><td><code>stavebná čiara - obytné miestnosti</code></td></tr>
+<details><summary>Stavebné polygóny – kategorizovaný podľa <code>kategoria</code> (5 kategórií)</summary><div class='body'><p class='small'>Zdroj: <code>shared_editable.stavebne_polygony</code></p><table class='compact'><thead><tr><th style='width:6%'>Farba</th><th>Kategória</th><th style='width:34%'>Hodnota</th></tr></thead><tbody><tr><td><i class="sw" style="background:#e0e0e0;opacity:1.0;border-color:#97c4e5" title="výplň #e0e0e0, obrys #97c4e5"></i></td><td>hranica stavebného pozemku</td><td><code>hranica stavebného pozemku</code></td></tr>
+<tr><td><i class="sw" style="background:#bcbcbc;opacity:0.45;border-color:#9aa5b4" title="výplň #bcbcbc, polopriehľadná"></i></td><td>stavebná čiara - doplnkové stavby</td><td><code>stavebná čiara - doplnkové stavby</code></td></tr>
+<tr><td><i class="sw" style="background:#989898;opacity:1.0;border-color:#9aa5b4" title="výplň #989898"></i></td><td>stavebná čiara - neobytné miestnosti</td><td><code>stavebná čiara - neobytné miestnosti</code></td></tr>
+<tr><td><i class="sw" style="background:#585858;opacity:1.0;border-color:#6498d2" title="výplň #585858"></i></td><td>stavebná čiara - obytné miestnosti</td><td><code>stavebná čiara - obytné miestnosti</code></td></tr>
 <tr><td><i class="sw" style="background:#c7c7c7;opacity:1.0;border-color:#9aa5b4" title="výplň #c7c7c7, obrys –"></i></td><td>posudzované územie - rezerva</td><td><code>posudzované územie - rezerva</code></td></tr></tbody></table></div></details>
 <details><summary>Zastavané územie – kategorizovaný podľa <code>stav</code> (1 kategórií)</summary><div class='body'><p class='small'>Zdroj: <code>upn.zu</code></p><table class='compact'><thead><tr><th style='width:6%'>Farba</th><th>Kategória</th><th style='width:34%'>Hodnota</th></tr></thead><tbody><tr><td><i class="sw" style="background:#377eb8;opacity:1.0;border-color:#9aa5b4" title="výplň #377eb8, obrys –"></i><i class="swl" style="background:#4d4d4d" title="#4d4d4d"></i></td><td>návrh 2.et</td><td><code>návrh 2.et</code></td></tr></tbody></table></div></details>
   <details><summary>Ostatné tematické vrstvy s jedným symbolom</summary><div class="body">
@@ -2371,7 +2373,7 @@ footer{color:var(--muted); font-size:12.5px; text-align:center; padding:10px 0 3
 <!-- ===================================================== 9 ===================================================== -->
 <section class="ch" id="ch-technika">
   <h2>9 · Technická príloha</h2>
-  <p class="small">Autor: Pavol Hort (hort@msunitra.sk) · verzia 2.6.10.7 · minimálna verzia QGIS 3.0 · knižnice: PyQt5, qgis.core, PyPDF2, reportlab, docxtpl / python-docx (priložené v <code>libs/</code>).</p>
+  <p class="small">Autor: Pavol Hort (hort@msunitra.sk) · verzia 2.6.10.21 · minimálna verzia QGIS 3.0 · knižnice: PyQt5, qgis.core, PyPDF2, reportlab, docxtpl / python-docx (priložené v <code>libs/</code>).</p>
 
   <h3 id="t-moduly">Moduly pluginu</h3>
   <table class="compact">
@@ -2421,8 +2423,8 @@ footer{color:var(--muted); font-size:12.5px; text-align:center; padding:10px 0 3
   <h3 id="t-layouty">Layouty a premenné projektu</h3>
   <div class="grid g2">
     <div class="card"><h4>Tlačové layouty</h4>
-      <p>UPI: <span class="lay">UPI First Page</span> <span class="lay">UPI Page 2</span> <span class="lay">UPI Page 3</span> <span class="lay">UPI Page Poznamky</span> <span class="lay">UPI Page Reklamy</span> <span class="lay">UPI Page Ortofoto</span> <span class="lay">Stavebné okno</span></p>
-      <p>CMZ: <span class="lay">CMZ 1</span> <span class="lay">CMZ 2</span> <span class="lay">CMZ 3 spodrobnenie</span> <span class="lay">CMZ 4 poznamky</span> <span class="lay">Stavebné okno</span></p></div>
+      <p>UPI: <span class="lay">UPI First Page</span> <span class="lay">UPI Page 2</span> <span class="lay">UPI Page 3</span> <span class="lay">UPI Page Poznamky</span> <span class="lay">UPI Page Reklamy</span> <span class="lay">UPI Page Ortofoto</span> <span class="lay">Stavebné okno - voľná</span> <span class="lay">Stavebné okno - kompaktná</span></p>
+      <p>CMZ: <span class="lay">CMZ 1</span> <span class="lay">CMZ 2</span> <span class="lay">CMZ 3 spodrobnenie</span> <span class="lay">CMZ 4 poznamky</span> <span class="lay">Stavebné okno - voľná</span></p></div>
     <div class="card"><h4>Premenné projektu (čítané výrazom <code>get_project_var('PozemokPlugin', …)</code>)</h4>
       <ul><li><code>pozemok_attributes</code> – JSON regulatívov mimo CMZ (vrátane <code>poradie_sekcii</code>, <code>ma_stavebne_okno</code>)</li>
       <li><code>pozemok_cmz_attributes</code> – JSON regulatívov CMZ</li>
@@ -2454,7 +2456,7 @@ footer{color:var(--muted); font-size:12.5px; text-align:center; padding:10px 0 3
   </table>
 </section>
 
-<footer>UPI Report Generator · dokumentácia k verzii 2.6.10.7 · Mesto Nitra – Útvar hlavného architekta</footer>
+<footer>UPI Report Generator · dokumentácia k verzii 2.6.10.21 · Mesto Nitra – Útvar hlavného architekta</footer>
 </main>
 </div>
 
